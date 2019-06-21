@@ -2,8 +2,26 @@
 
 from PIL import Image
 import sys
+import argparse
 
-image = Image.open(sys.argv[1])
+
+def output(args, list):
+
+    with args.output as out:
+        for i in range(0, len(pixel_ascii)):
+            for j in pixel_ascii[i]:
+                out.write(j)
+            out.write("\n")
+
+
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--input", required=True, help="Input file")
+ap.add_argument("-o", "--output", required=False, type=argparse.FileType('w'), help="Output to file, else output to terminal")
+
+parsed = ap.parse_args()
+
+image = Image.open(parsed.input)
 image = image.transpose(Image.ROTATE_90)
 height, width = image.size
 
@@ -39,11 +57,13 @@ for x in range(0, len(pixel_brightness)):
     for y in range(0, len(pixel_brightness[x])):
         pixelb = pixel_brightness[x][y]
         ascii_c = int(pixelb/constant)
-        #print(ascii_c)
         for n in range(0, 3):
             row.append(brightness_levels[ascii_c-1])
     pixel_ascii.append(row)
 
-for x in range(0, len(pixel_ascii)):
-    print(*pixel_ascii[x], sep='')
-#print(*pixel_ascii, sep='')
+
+if parsed.output:
+    output(parsed, pixel_ascii)
+else:
+    for x in range(0, len(pixel_ascii)):
+        print(*pixel_ascii[x], sep='')
