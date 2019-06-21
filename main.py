@@ -18,6 +18,9 @@ def output(args, list):
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input", required=True, help="Input file")
 ap.add_argument("-o", "--output", required=False, type=argparse.FileType('w'), help="Output to file, else output to terminal")
+ap.add_argument("-wi", "--width", required=True, type=int, help="Output size (Width)")
+ap.add_argument("-he", "--height", required=True, type=int, help="Output size (Height)")
+
 
 parsed = ap.parse_args()
 
@@ -25,17 +28,19 @@ image = Image.open(parsed.input)
 image = image.transpose(Image.ROTATE_90)
 height, width = image.size
 
-new_width = 120
-new_height = 150
+new_width = parsed.width
+new_height = parsed.height
 
 img = image.resize((new_width, new_height), Image.ANTIALIAS)
+
+new_height, new_width = img.size
 
 rgb_image = img.convert('RGB')
 
 pixels = []
-for x in range(0, new_width):
+for x in range(0, new_height):
     row = []
-    for y in range(0, new_height):
+    for y in range(0, new_width):
         row.append(rgb_image.getpixel((x, y))) 
     pixels.append(row)
 
